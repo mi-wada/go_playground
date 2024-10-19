@@ -1,10 +1,40 @@
 package base64
 
 const (
-	Std = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	StdPadding = '='
 )
 
-func Encode(src []byte) []byte {
+var (
+	StdEncoding = NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+	URLEncoding = NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")
+)
+
+type Encoding struct {
+	encoder []byte
+	decoder map[byte]byte
+	padding rune
+}
+
+func NewEncoding(encoder string) *Encoding {
+	if len(encoder) != 64 {
+		panic("`encoder` is not 64-bytes long")
+	}
+
+	decoder := make(map[byte]byte)
+	for i, c := range encoder {
+		decoder[byte(c)] = byte(i)
+	}
+
+	return &Encoding{encoder: []byte(encoder), decoder: decoder, padding: StdPadding}
+}
+
+func (e Encoding) WithPadding(padding rune) *Encoding {
+	e.padding = padding
+
+	return &e
+}
+
+func (e *Encoding) Encode(src []byte) []byte {
 	// Base64 encoding handle 6bits as 1byte(8bits), so allocate len(src)*8/6 cap.
 	res := make([]byte, 0, len(src)*8/6)
 
@@ -23,23 +53,18 @@ func Encode(src []byte) []byte {
 			sixBits += (bit << (5 - (j % 6)))
 		}
 
-		res = append(res, Std[sixBits])
+		res = append(res, e.encoder[sixBits])
 	}
 
 	// Add padding
 	for len(res)%4 != 0 {
-		res = append(res, '=')
+		res = append(res, byte(e.padding))
 	}
 
 	return res
 }
 
-func Decode(src []byte) []byte {
-	StdCToByte := make(map[string]byte)
-	for i, c := range Std {
-		StdCToByte[string(c)] = byte(i)
-	}
-
+func (e *Encoding) Decode(src []byte) []byte {
 	res := make([]byte, 0, len(src)*6/8)
 	for i := 0; i < 6*len(src); i += 8 {
 		var char byte
@@ -49,13 +74,13 @@ func Decode(src []byte) []byte {
 			byteIdx := j / 6
 			bitIdx := 5 - j%6
 
-			if src[byteIdx] == '=' {
+			if src[byteIdx] == byte(e.padding) {
 				meetsEq = true
 				break
 			}
 
 			var bit byte
-			bit = (StdCToByte[string(src[byteIdx])] & (1 << bitIdx)) >> bitIdx
+			bit = (e.decoder[src[byteIdx]] & (1 << bitIdx)) >> bitIdx
 			char += (bit << (7 - (j % 8)))
 		}
 
