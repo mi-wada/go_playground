@@ -1,0 +1,11 @@
+{
+    "[go]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "golang.go"
+    },
+    "go.lintTool": "golangci-lint",
+    // At local, only run fast linters for Developer Experience. At CI, run slow linters.
+    "go.lintFlags": [
+        "--fast"
+    ],
+}

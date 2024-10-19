@@ -1,0 +1,4 @@
+/main.go
+/main_test.go
+
+*.db

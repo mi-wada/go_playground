@@ -1,0 +1,18 @@
+version: '3'
+vars:
+  GOLANGCI_LINT_VERSION: v1.61.0
+tasks:
+  install_dev_deps:
+    cmds:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@{{.GOLANGCI_LINT_VERSION}}
+    status:
+      - which golangci-lint
+    silent: true
+  lint:
+    deps: [install_dev_deps]
+    cmds:
+      - golangci-lint run
+  "lint:fix":
+    deps: [install_dev_deps]
+    cmds:
+      - golangci-lint run --fix
