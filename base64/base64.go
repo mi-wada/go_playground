@@ -34,4 +34,35 @@ func Encode(src []byte) []byte {
 	return res
 }
 
-// decode
+func Decode(src []byte) []byte {
+	StdCToByte := make(map[string]byte)
+	for i, c := range Std {
+		StdCToByte[string(c)] = byte(i)
+	}
+
+	res := make([]byte, 0, len(src)*6/8)
+	for i := 0; i < 6*len(src); i += 8 {
+		var char byte
+		meetsEq := false
+
+		for j := i; j < i+8; j++ {
+			byteIdx := j / 6
+			bitIdx := 5 - j%6
+
+			if src[byteIdx] == '=' {
+				meetsEq = true
+				break
+			}
+
+			var bit byte
+			bit = (StdCToByte[string(src[byteIdx])] & (1 << bitIdx)) >> bitIdx
+			char += (bit << (7 - (j % 8)))
+		}
+
+		if meetsEq {
+			break
+		}
+		res = append(res, char)
+	}
+	return res
+}

@@ -44,3 +44,43 @@ func TestEncode(t *testing.T) {
 		})
 	}
 }
+
+func TestDecode(t *testing.T) {
+	type args struct {
+		src []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{
+			name: "1 byte",
+			args: args{
+				src: []byte{'g', 'A', '=', '='},
+			},
+			want: []byte{0b100000_00},
+		},
+		{
+			name: "2 byte",
+			args: args{
+				src: []byte{'A', 'I', 'A', '='},
+			},
+			want: []byte{0b000000_00, 0b1000_0000},
+		},
+		{
+			name: "3 byte",
+			args: args{
+				src: []byte{'A', 'A', 'A', 'A'},
+			},
+			want: []byte{0b000000_00, 0b0000_0000, 0b00_000000},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Decode(tt.args.src); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Decode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
