@@ -3,6 +3,7 @@ package json
 import (
 	"errors"
 	"fmt"
+	"unicode"
 )
 
 type tokenType int
@@ -76,6 +77,8 @@ func tokenize(src []byte) ([]token, error) {
 
 	for cur < len(src) {
 		switch {
+		case unicode.IsSpace(rune(src[cur])):
+			cur++
 		case src[cur] == '"':
 			token, newCur, err := extractStringToken(src, cur)
 			if err != nil {
