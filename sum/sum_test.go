@@ -6,8 +6,9 @@ import (
 )
 
 const (
-	maxSliceSize = 2_000_000
-	maxItemValue = 100
+	maxBenchmarkDataSize = 100
+	maxSliceSize         = 2_000_000
+	maxItemValue         = 100
 )
 
 var (
@@ -19,6 +20,14 @@ var (
 		{"Single element", []int{10}, 10},
 		{"Zeros", []int{0, 0, 0}, 0},
 	}
+	benchmarkData = func() [][]int {
+		res := make([][]int, maxBenchmarkDataSize)
+
+		for i := 0; i < maxBenchmarkDataSize; i++ {
+			res[i] = generateRandomSlice()
+		}
+		return res
+	}()
 )
 
 type test struct {
@@ -40,7 +49,7 @@ func TestSum(t *testing.T) {
 
 func BenchmarkSum(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Sum(generateRandomSlice())
+		Sum(benchmarkArray(i))
 	}
 }
 
@@ -55,9 +64,26 @@ func TestSumRec(t *testing.T) {
 	}
 }
 
+func BenchmarkSumRange(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		SumRange(benchmarkArray(i))
+	}
+}
+
+func TestSumRange(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := SumRange(tt.arg)
+			if result != tt.want {
+				t.Errorf("SumRange(%v) = %d; want %d", tt.arg, result, tt.want)
+			}
+		})
+	}
+}
+
 func BenchmarkSumRec(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sumRec(generateRandomSlice())
+		sumRec(benchmarkArray(i))
 	}
 }
 
@@ -74,7 +100,7 @@ func TestSumParallel(t *testing.T) {
 
 func BenchmarkSumParallel(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SumParallel(generateRandomSlice(), 2)
+		SumParallel(benchmarkArray(i), 2)
 	}
 }
 
@@ -91,7 +117,7 @@ func TestSumHeuristic(t *testing.T) {
 
 func BenchmarkSumHeuristic(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SumHeuristic(generateRandomSlice())
+		SumHeuristic(benchmarkArray(i))
 	}
 }
 
@@ -108,8 +134,12 @@ func TestSumHeuristicInline(t *testing.T) {
 
 func BenchmarkSumHeuristicInline(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SumHeuristicInline(generateRandomSlice())
+		SumHeuristicInline(benchmarkArray(i))
 	}
+}
+
+func benchmarkArray(i int) []int {
+	return benchmarkData[i%maxBenchmarkDataSize]
 }
 
 func generateRandomSlice() []int {

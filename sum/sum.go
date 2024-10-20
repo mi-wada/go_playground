@@ -3,6 +3,16 @@ package sum
 func Sum(a []int) int {
 	res := 0
 
+	for i := 0; i < len(a); i++ {
+		res += a[i]
+	}
+
+	return res
+}
+
+func SumRange(a []int) int {
+	res := 0
+
 	for _, v := range a {
 		res += v
 	}
@@ -47,27 +57,19 @@ func SumParallel(a []int, parallelCount int) int {
 }
 
 func SumHeuristic(a []int) int {
-	threshold := 1_000_000
+	threshold := 180_000
 
 	if len(a) > threshold {
-		return Sum(a)
-	} else {
 		return SumParallel(a, 2)
+	} else {
+		return Sum(a)
 	}
 }
 
 func SumHeuristicInline(a []int) int {
-	threshold := 1_000_000
+	threshold := 180_000
 
 	if len(a) > threshold {
-		res := 0
-
-		for _, v := range a {
-			res += v
-		}
-
-		return res
-	} else {
 		res := 0
 		ch := make(chan int)
 
@@ -80,6 +82,14 @@ func SumHeuristicInline(a []int) int {
 		}()
 
 		res = <-ch + <-ch
+
+		return res
+	} else {
+		res := 0
+
+		for _, v := range a {
+			res += v
+		}
 
 		return res
 	}
