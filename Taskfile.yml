@@ -16,3 +16,9 @@ tasks:
     deps: [install_dev_deps]
     cmds:
       - golangci-lint run --fix
+  run:
+    cmds:
+      - go run main.go
+  test:
+    cmds:
+      - go test ./...
