@@ -230,7 +230,6 @@ func solve(board *Board, debug bool) bool {
 }
 
 func main() {
-	// handle --debug flag
 	debug := false
 	for _, arg := range os.Args[1:] {
 		if arg == "--debug" {
@@ -252,8 +251,8 @@ func main() {
 		},
 	)
 
-	fmt.Println("initial")
-	println(board.pretty())
+	fmt.Println("given")
+	fmt.Println(board.pretty())
 
 	solved := solve(&board, debug)
 
