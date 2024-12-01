@@ -4,6 +4,7 @@ go 1.23.3
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.0
+	github.com/google/uuid v1.6.0
 	github.com/ikawaha/kagome-dict/ipa v1.2.0
 	github.com/ikawaha/kagome/v2 v2.10.0
 	github.com/labstack/echo/v4 v4.12.0
