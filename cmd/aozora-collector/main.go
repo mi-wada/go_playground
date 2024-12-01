@@ -17,6 +17,8 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ikawaha/kagome-dict/ipa"
+	"github.com/ikawaha/kagome/v2/tokenizer"
 	"golang.org/x/text/encoding/japanese"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -27,6 +29,12 @@ const (
 )
 
 func main() {
+	db, err := initDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 	authorURL := "https://www.aozora.gr.jp/index_pages/person879.html"
 
 	entries, err := findEntries(authorURL)
@@ -34,19 +42,73 @@ func main() {
 		log.Fatal(err)
 	}
 	for entry := range slices.Values(entries) {
-		fmt.Println(entry)
 		text, err := downloadText(entry.ZipURL)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("text: %v\n", text)
-	}
 
+		res, err := db.Exec(`
+INSERT OR REPLACE INTO
+	authors(author_id, author)
+	VALUES (?, ?)
+		`, entry.AuthorID, entry.Author)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		res, err = db.Exec(`
+INSERT OR REPLACE INTO
+	contents(author_id, title_id, title, content)
+	VALUES (?, ?, ?, ?)
+		`, entry.AuthorID, entry.TitleID, entry.Title, text)
+		if err != nil {
+			log.Fatal(err)
+		}
+		docID, err := res.LastInsertId()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		t, err := tokenizer.New(ipa.Dict(), tokenizer.OmitBosEos())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		seg := t.Wakati(text)
+		_, err = db.Exec(`
+INSERT OR REPLACE INTO
+	contents_fts(docid, words)
+	VALUES(?, ?)
+		`, docID, strings.Join(seg, " "),
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Printf("Registered: %s", entry.Title)
+	}
+}
+
+func initDB() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "database.sqlite")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	defer db.Close()
+
+	createTableQueries := []string{
+		`CREATE TABLE IF NOT EXISTS authors(author_id TEXT, author TEXT, PRIMARY KEY
+  (author_id))`,
+		`CREATE TABLE IF NOT EXISTS contents(author_id TEXT, title_id TEXT, title
+  TEXT, content TEXT, PRIMARY KEY (author_id, title_id))`,
+		`CREATE VIRTUAL TABLE IF NOT EXISTS contents_fts USING fts4(words)`,
+	}
+	for q := range slices.Values(createTableQueries) {
+		_, err := db.Exec(q)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return db, nil
 }
 
 type Entry struct {
@@ -73,9 +135,9 @@ func findEntries(authorURL string) ([]Entry, error) {
 	}
 
 	doc.Find("ol").First().Find("li > a").Each(func(i int, elem *goquery.Selection) {
-		if i > 0 {
-			return
-		}
+		// if i > 1 {
+		// 	return
+		// }
 		title := elem.Text()
 
 		bookURL, exists := elem.Attr("href")

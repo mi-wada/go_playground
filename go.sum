@@ -2,6 +2,12 @@ github.com/PuerkitoBio/goquery v1.10.0 h1:6fiXdLuUvYs2OJSvNRqlNPoBm6YABE226xrbav
 github.com/PuerkitoBio/goquery v1.10.0/go.mod h1:TjZZl68Q3eGHNBA8CWaxAN7rOU1EbDz3CWuolcO5Yu4=
 github.com/andybalholm/cascadia v1.3.2 h1:3Xi6Dw5lHF15JtdcmAHD3i1+T8plmv7BQ/nsViSLyss=
 github.com/andybalholm/cascadia v1.3.2/go.mod h1:7gtRlve5FxPPgIgX36uWBX58OdBsSS6lUvCFb+h7KvU=
+github.com/ikawaha/kagome-dict v1.1.0 h1:ePU16KkyonhYLo4YDf/UExmZJBhY/6C946T1SOg1TI4=
+github.com/ikawaha/kagome-dict v1.1.0/go.mod h1:tcbTxQQll5voEBnJqGYt2zJuCouUL6buAOrpSxzo9Fg=
+github.com/ikawaha/kagome-dict/ipa v1.2.0 h1:lgehXOf2USDkBwGPEBD9sbbOBk3WlkhZ2zejPSLjIJA=
+github.com/ikawaha/kagome-dict/ipa v1.2.0/go.mod h1:LRtB3BXipG3Iu4V+KI/E1E7r9GMa79WgAH6IAW4wy6A=
+github.com/ikawaha/kagome/v2 v2.10.0 h1:gObyHxSPVudvHXHQecyVAv3DohIifx9MtA8ErXlx+1g=
+github.com/ikawaha/kagome/v2 v2.10.0/go.mod h1:IEyFbC0oCkMMaIvTAU3O4IrM5mK0AyWJwM41Tb4u77U=
 github.com/mattn/go-sqlite3 v1.14.24 h1:tpSp2G2KyMnnQu99ngJ47EIkWVmliIizyZBfPrBWDRM=
 github.com/mattn/go-sqlite3 v1.14.24/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
