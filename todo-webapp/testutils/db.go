@@ -1,28 +1,15 @@
-package main
+package testutils
 
 import (
 	"database/sql"
 	"fmt"
 	"slices"
 
-	"github.com/labstack/echo/v4"
-	"github.com/mi-wada/go_playground/todo-webapp/handler"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
-	db, err := initDB()
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	e := echo.New()
-	e.GET("/healthz", handler.NewHandler(db).GetHealthz)
-	e.Start(":8080")
-}
-
-func initDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "todo-webapp.sqlite")
+func InitDB() (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		return nil, err
 	}

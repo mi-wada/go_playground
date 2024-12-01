@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
+	"github.com/mi-wada/go_playground/todo-webapp/testutils"
 )
 
 func TestGetHealthz(t *testing.T) {
@@ -14,7 +15,14 @@ func TestGetHealthz(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if err := GetHealthz(c); err != nil {
+	db, err := testutils.InitDB()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	handler := NewHandler(db)
+
+	if err := handler.GetHealthz(c); err != nil {
 		t.Fatal(err)
 	}
 	if rec.Code != http.StatusOK {
