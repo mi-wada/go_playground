@@ -3,7 +3,7 @@ module github.com/mi-wada/go_playground
 go 1.23.4
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.0
+	github.com/PuerkitoBio/goquery v1.10.1
 	github.com/google/uuid v1.6.0
 	github.com/ikawaha/kagome-dict/ipa v1.2.0
 	github.com/ikawaha/kagome/v2 v2.10.0
