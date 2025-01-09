@@ -9,6 +9,7 @@ require (
 	github.com/ikawaha/kagome/v2 v2.10.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/mattn/go-sqlite3 v1.14.24
+	github.com/mi-wada/jct-go v0.0.0
 	github.com/olekukonko/tablewriter v0.0.5
 	golang.org/x/text v0.21.0
 )
